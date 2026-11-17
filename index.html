@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#a43d1d">
+  <title>Apollon og Dafne — en myte i bevægelse</title>
+  <style>
+    :root { --clay:#a43d1d; --clay-dark:#863014; --ink:#1e120d; --cream:#f6dfb4; --line:#f2c78f; --gold:#ffdf9d; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; background:var(--clay); color:var(--cream); font-family:Georgia,'Iowan Old Style',serif; overflow-x:hidden; }
+    body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.12; z-index:20; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.78' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.36'/%3E%3C/svg%3E"); }
+    button { font:inherit; }
+    a { color:inherit; }
+    .intro {
+      min-height:100svh;
+      display:grid;
+      grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);
+      align-items:center;
+      gap:clamp(24px,4vw,72px);
+      --cover-inset:clamp(32px,7vw,180px);
+      position:relative;
+      padding:clamp(30px,6svh,80px) var(--cover-inset);
+    }
+    .intro h1 { margin:0; font-size:clamp(62px,10vw,200px); line-height:.96; font-weight:400; letter-spacing:-.065em; }
+    .intro-title-line { display:block; white-space:nowrap; }
+    .intro-title-join { font-size:.6em; font-style:italic; letter-spacing:-.025em; }
+    .intro-art { display:block; width:100%; height:auto; max-height:82svh; object-fit:contain; }
+    .story { position:relative; isolation:isolate; }
+    .path-layer { position:absolute; inset:0; width:100%; height:100%; overflow:visible; z-index:0; pointer-events:none; opacity:0; transition:opacity .3s ease; }
+    .path-base,.path-progress { fill:none; vector-effect:non-scaling-stroke; stroke-linecap:round; }
+    .path-base { stroke:rgba(246,223,180,.38); stroke-width:1.5; }
+    .path-progress { stroke:var(--gold); stroke-width:2.3; filter:drop-shadow(0 0 6px rgba(255,235,171,.7)); }
+    .path-dot-halo { fill:rgba(255,223,157,.18); }
+    .path-dot { fill:var(--cream); stroke:var(--gold); stroke-width:2; filter:drop-shadow(0 0 11px #ffe0aa); }
+    .scene { min-height:112svh; position:relative; display:grid; grid-template-columns:1fr 1fr; align-items:center; gap:5vw; padding:12vh clamp(28px,8vw,150px); z-index:1; }
+    .scene:nth-of-type(even) .scene-copy { grid-column:2; grid-row:1; }
+    .scene:nth-of-type(even) .art { grid-column:1; grid-row:1; }
+    .scene-copy { width:min(100%,520px); position:relative; z-index:2; background:var(--clay); box-shadow:0 0 38px 34px var(--clay); opacity:var(--appear,0); transform:translateY(calc((1 - var(--appear,0))*38px)); transition:opacity .18s linear; }
+    .eyebrow { display:flex; align-items:center; gap:18px; font-size:12px; letter-spacing:.25em; text-transform:uppercase; margin-bottom:36px; }
+    .eyebrow::after { content:""; width:64px; height:1px; background:currentColor; opacity:.55; }
+    .scene h2 { font-weight:400; font-size:clamp(42px,6.2vw,94px); line-height:.98; letter-spacing:-.05em; margin:0 0 29px; text-wrap:balance; }
+    .scene-lead { font-size:clamp(18px,1.65vw,27px); line-height:1.5; max-width:23ch; margin:0; }
+    .read-more { color:var(--cream); background:none; border:0; border-bottom:1px solid currentColor; padding:0 0 8px; margin-top:34px; font-size:13px; letter-spacing:.18em; text-transform:uppercase; cursor:pointer; }
+    .read-more:hover,.read-more:focus-visible { color:#fff8e7; outline:none; border-bottom-width:2px; }
+    .art { width:100%; min-height:66vh; margin:0; position:relative; display:grid; place-items:center; opacity:var(--appear,0); transform:translateY(calc((1 - var(--appear,0))*90px)) scale(calc(.91 + var(--appear,0)*.09)); will-change:transform,opacity; }
+    .art img { display:block; max-width:100%; max-height:73vh; object-fit:contain; filter:drop-shadow(0 14px 16px rgba(30,18,13,.13)); }
+    .art::after { content:attr(data-hover); position:absolute; left:50%; bottom:-4px; transform:translate(-50%,10px); opacity:0; pointer-events:none; width:max-content; max-width:min(80vw,370px); background:var(--ink); color:var(--cream); padding:13px 19px; font-size:14px; line-height:1.45; text-align:center; transition:.25s; }
+    .art:hover::after,.art:focus-within::after { opacity:1; transform:translate(-50%,0); }
+    .art--arrows img { width:min(40vw,560px); transform:rotate(calc((1 - var(--p,0)) * -18deg)) scale(calc(.7 + var(--p,0)*.3)); }
+    .art--dafne img { width:min(36vw,470px); transform:translateX(calc((1 - var(--p,0))*-70px)); }
+    .art--chase { display:block; }
+    .art--chase img { position:absolute; bottom:0; height:65vh; width:auto; }
+    .art--chase .apollo { left:-10vw; height:46vh; opacity:.78; transform:translateX(calc((1 - var(--p,0))*-90px)); }
+    .art--chase .daphne { right:-3vw; height:63vh; transform:translateX(calc((1 - var(--p,0))*90px)); }
+    .art--change .daphne { position:absolute; height:65vh; opacity:calc(1 - var(--morph,0)); transform:translateY(calc(var(--morph,0)*20px)); }
+    .art--change .tree { position:absolute; height:68vh; opacity:var(--morph,0); transform:scale(calc(.65 + var(--morph,0)*.35)); transform-origin:50% 90%; }
+    .tree-illustration { position:relative; width:min(49vw,670px,85vh); max-width:100%; }
+    .art--tree img { width:100%; height:auto; }
+    .art--tree::after { content:none; }
+    .scene--last { min-height:108svh; }
+    .scene--last::after { content:""; position:absolute; inset:auto 0 0; height:30vh; background:linear-gradient(transparent,rgba(30,7,3,.28)); pointer-events:none; }
+    dialog { width:min(650px,calc(100% - 30px)); border:1px solid var(--line); background:#77260f; color:var(--cream); padding:clamp(26px,5vw,60px); box-shadow:0 24px 90px rgba(22,8,2,.55); }
+    dialog::backdrop { background:rgba(19,6,2,.72); backdrop-filter:blur(4px); }
+    dialog h3 { font-weight:400; font-size:clamp(34px,4vw,55px); margin:0 0 18px; }
+    dialog p { font-size:18px; line-height:1.65; }
+    .close { position:absolute; top:15px; right:18px; border:0; background:none; color:inherit; cursor:pointer; font-size:30px; }
+    .source-link { display:inline-block; margin-top:20px; font-size:13px; letter-spacing:.08em; }
+    @media (max-width:760px) {
+      .intro { --cover-inset:8vw; grid-template-columns:1fr; align-content:center; gap:clamp(12px,3svh,28px); padding:30px var(--cover-inset); }
+      .intro h1 { font-size:clamp(53px,13vw,94px); }
+      .intro-art { justify-self:end; width:min(78%,360px); max-height:46svh; object-position:right center; }
+      .scene { min-height:112svh; grid-template-columns:1fr; grid-template-rows:auto auto; gap:0; padding:10vh 26px 12vh; align-content:center; }
+      .scene:nth-of-type(even) .scene-copy,.scene:nth-of-type(even) .art { grid-column:1; grid-row:auto; }
+      .scene-copy { order:1; max-width:580px; } .art { order:2; min-height:48vh; }
+      .scene h2 { font-size:clamp(43px,12vw,72px); } .scene-lead { font-size:19px; max-width:30ch; }
+      .art img { max-height:50vh; } .art--arrows img { width:min(76vw,450px); }
+      .art--dafne img { width:min(68vw,350px); }
+      .art--chase { overflow:hidden; } .art--chase img { height:45vh; } .art--chase .apollo { height:32vh; left:-15px; } .art--chase .daphne { height:43vh; right:-10px; }
+      .art--change .daphne,.art--change .tree { height:48vh; }
+      .tree-illustration { width:min(85vw,500px,55vh); }
+      .art::after { display:none; }
+    }
+    @media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } .path-layer,.scene-copy,.art,.art img { transition:none!important; } .scene-copy,.art,.art img { transform:none!important; } }
+  </style>
+</head>
+<body>
+  <main id="top">
+    <section class="intro" aria-labelledby="title">
+      <div class="intro-copy">
+        <h1 id="title"><span class="intro-title-line">Apollon</span> <span class="intro-title-line"><span class="intro-title-join">og</span> Dafne</span></h1>
+      </div>
+      <img class="intro-art" src="assets/bue-og-laurbaer.png" alt="">
+    </section>
+    <div class="story" id="story">
+      <svg class="path-layer" id="timeline" viewBox="0 0 1000 5600" preserveAspectRatio="none" aria-hidden="true">
+        <defs><clipPath id="timeline-reveal"><rect id="timeline-reveal-area" x="-30" y="-30" width="1060" height="0"/></clipPath></defs>
+        <path id="path-base" class="path-base" d="M500 0 C700 240 820 420 720 700 S210 980 240 1250 S820 1520 760 1800 S220 2110 270 2380 S770 2730 730 3010 S190 3330 250 3640 S830 3940 760 4240 S240 4600 330 4840 C470 4920 570 4980 620 5030 C660 5120 680 5220 680 5290"/>
+        <path id="path-progress" class="path-progress" clip-path="url(#timeline-reveal)"/>
+        <circle id="path-halo" class="path-dot-halo" cx="500" cy="0" r="19"/><circle id="path-dot" class="path-dot" cx="500" cy="0" r="7"/>
+      </svg>
+      <section class="scene" id="scene-1" aria-labelledby="heading-1">
+        <div class="scene-copy"><div class="eyebrow">01 / Begyndelsen</div><h2 id="heading-1">Amors to pile</h2><p class="scene-lead">Guden Apollon håner Amor, kærlighedens gud. Amor svarer med to pile.</p><button class="read-more" data-scene="1">Læs hele scenen ↗</button></div>
+        <figure class="art art--arrows" data-hover="Guld vækker kærlighed. Bly får kærligheden til at vige."><img src="assets/pile.png" alt="To krydsede pile: en gylden og en med blyspids" loading="lazy"></figure>
+      </section>
+      <section class="scene" id="scene-2" aria-labelledby="heading-2">
+        <div class="scene-copy"><div class="eyebrow">02 / Mødet</div><h2 id="heading-2">To modsatte ønsker</h2><p class="scene-lead">Nymfen Dafne lever som jæger i skoven og vil ikke giftes. Apollon forelsker sig i hende.</p><button class="read-more" data-scene="2">Læs hele scenen ↗</button></div>
+        <figure class="art art--dafne" data-hover="Dafne er en jæger, der helst færdes i skoven."><img src="assets/dafne.png" alt="Dafne som jæger med bue" loading="lazy"></figure>
+      </section>
+      <section class="scene" id="scene-3" aria-labelledby="heading-3">
+        <div class="scene-copy"><div class="eyebrow">03 / Flugten</div><h2 id="heading-3">Hun løber. Han følger.</h2><p class="scene-lead">Apollon kalder efter hende. Dafne standser ikke, og jagten bliver mere og mere desperat.</p><button class="read-more" data-scene="3">Læs hele scenen ↗</button></div>
+        <figure class="art art--chase" data-hover="Hos Ovid drives han af håb, mens hun drives af frygt."><img class="apollo" src="assets/apollon.png" alt="Apollon" loading="lazy"><img class="daphne" src="assets/dafne.png" alt="Dafne" loading="lazy"></figure>
+      </section>
+      <section class="scene" id="scene-4" aria-labelledby="heading-4">
+        <div class="scene-copy"><div class="eyebrow">04 / Forvandlingen</div><h2 id="heading-4">Ved floden</h2><p class="scene-lead">Udmattet beder Dafne sin far, flodguden Peneus, om hjælp. Hun forvandles til et laurbærtræ.</p><button class="read-more" data-scene="4">Læs hele scenen ↗</button></div>
+        <figure class="art art--change" data-hover="Hår bliver til blade, arme til grene og fødder til rødder."><img class="daphne" src="assets/dafne.png" alt="Dafne før forvandlingen" loading="lazy"><img class="tree" src="assets/laurbaer.png" alt="Laurbærtræet" loading="lazy"></figure>
+      </section>
+      <section class="scene scene--last" id="scene-5" aria-labelledby="heading-5">
+        <div class="scene-copy"><div class="eyebrow">05 / Efterspillet</div><h2 id="heading-5">Apollons træ</h2><p class="scene-lead">Apollon gør laurbærtræet til sit symbol. Men Dafnes flugt er stadig mytens sidste bevægelse.</p><button class="read-more" data-scene="5">Læs hele scenen ↗</button></div>
+        <figure class="art art--tree">
+          <div class="tree-illustration">
+            <img src="assets/laurbaer.png" alt="Laurbærtræ med grene og blade" loading="lazy">
+          </div>
+        </figure>
+      </section>
+    </div>
+  </main>
+  <dialog id="scene-dialog"><button class="close" id="dialog-close" aria-label="Luk">×</button><div class="eyebrow" id="dialog-number"></div><h3 id="dialog-title"></h3><p id="dialog-text"></p><a class="source-link" href="https://web.viu.ca/johnstoi/ovid/ovid1.htm" target="_blank" rel="noopener">Ovids tekst ↗</a></dialog>
+  <script>
+    const details = {
+      1:['Amors to pile','Apollon er gud for blandt andet musik og bueskydning. Han har lige besejret slangen Python og gør grin med Amors lille bue. Amor, kærlighedens gud, svarer ved at skyde Apollon med en gylden pil, som vækker kærlighed, og Dafne med en pil med blyspids, som får hende til at afvise den. Det er altså ikke tilfældigt, at de vil det stik modsatte.'],
+      2:['To modsatte ønsker','Dafne er en nymfe, et naturvæsen, og datter af flodguden Peneus. Hun elsker skoven og jagten og ønsker ikke at gifte sig. Apollon ser hende og bliver straks forelsket. Myten opstiller dermed to ønsker, der ikke kan forenes: hans ønske om at få hende og hendes ønske om at være fri.'],
+      3:['Hun løber. Han følger.','Dafne flygter, og Apollon løber efter. Han beder hende standse og forsøger at overbevise hende om, at han ikke er farlig. Hun fortsætter med at løbe. Ovid sammenligner jagten med et rovdyr, der er ved at indhente sit bytte: han drives af håb, hun af frygt.'],
+      4:['Ved floden','Da Dafne er ved at blive indhentet, beder hun sin far, flodguden Peneus, om hjælp. Hendes krop forvandles: hår bliver til blade, arme til grene, fødder til rødder. Hun står tilbage som et laurbærtræ. Forvandlingen redder hende fra jagten, men koster hende samtidig hendes menneskelige krop.'],
+      5:['Apollons træ','Apollon omfavner træet og erklærer, at laurbær skal være hans træ. Hos Ovid bliver bladene knyttet til hans hår, lyre og pilekogger og senere til sejrsoptog og sejrskranse. Slutningen er tvetydig: Apollon får sit symbol, men Dafnes afvisning bliver ikke ophævet.']
+    };
+    const dialog=document.querySelector('#scene-dialog');
+    document.querySelectorAll('[data-scene]').forEach(button=>button.addEventListener('click',()=>{
+      const n=button.dataset.scene; document.querySelector('#dialog-number').textContent=`SCENE ${String(n).padStart(2,'0')}`;
+      document.querySelector('#dialog-title').textContent=details[n][0]; document.querySelector('#dialog-text').textContent=details[n][1]; dialog.showModal();
+    }));
+    document.querySelector('#dialog-close').addEventListener('click',()=>dialog.close());
+    dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close()});
+    const story=document.querySelector('#story'),path=document.querySelector('#path-base'),progress=document.querySelector('#path-progress'),dot=document.querySelector('#path-dot'),halo=document.querySelector('#path-halo'),scenes=[...document.querySelectorAll('.scene')];
+    const finalScene=document.querySelector('#scene-5'),treeArt=finalScene.querySelector('.art--tree'),treeFrame=treeArt.querySelector('.tree-illustration'),treeImage=treeFrame.querySelector('img');
+    const revealArea=document.querySelector('#timeline-reveal-area');
+    let total=0,rootYpx=story.offsetHeight,ticking=false;
+    function layoutPath(){
+      const hasTree=treeImage.complete&&treeImage.naturalWidth>0;
+      const rootXpx=hasTree?finalScene.offsetLeft+treeArt.offsetLeft+treeFrame.offsetLeft+treeFrame.offsetWidth*.343:story.offsetWidth*.68;
+      rootYpx=hasTree?finalScene.offsetTop+treeArt.offsetTop+treeFrame.offsetTop+treeFrame.offsetHeight*.93:story.offsetHeight*.945;
+      const rootX=rootXpx/story.offsetWidth*1000;
+      const rootY=rootYpx/story.offsetHeight*5600;
+      const turnY=4240+(rootY-4240)*.53;
+      const approachX=innerWidth<=760 ? 100 : rootX-160;
+      const d=`M500 0 C700 240 820 420 720 700 S210 980 240 1250 S820 1520 760 1800 S220 2110 270 2380 S770 2730 730 3010 S190 3330 250 3640 S830 3940 760 4240 S${approachX} ${turnY-180} ${approachX} ${turnY} S${rootX-65} ${rootY-100} ${rootX} ${rootY}`;
+      path.setAttribute('d',d);progress.setAttribute('d',d);
+      total=path.getTotalLength();
+      update();
+    }
+    function update(){
+      const box=story.getBoundingClientRect();
+      const entered=Math.max(0,innerHeight-box.top);
+      const endPhase=Math.max(0,Math.min(1,(entered-(box.height-innerHeight*.65))/(innerHeight*.65)));
+      const targetY=Math.max(0,Math.min(rootYpx,entered-Math.min(entered*.5,innerHeight*.45)+endPhase*innerHeight*.45));
+      document.querySelector('#timeline').style.opacity=entered>0?'1':'0';
+      const y=targetY/box.height*5600; let lo=0,hi=total;
+      for(let i=0;i<18;i++){const mid=(lo+hi)/2; if(path.getPointAtLength(mid).y<y)lo=mid; else hi=mid;}
+      const length=(lo+hi)/2,pt=path.getPointAtLength(length);
+      // The path moves downward, so revealing it to the dot's Y position
+      // keeps the two aligned even when the SVG stretches to fit the page.
+      revealArea.setAttribute('height', entered > 0 ? pt.y + 30 : 0);
+      dot.setAttribute('cx',pt.x); dot.setAttribute('cy',pt.y); halo.setAttribute('cx',pt.x); halo.setAttribute('cy',pt.y);
+      const glow=Math.max(0,Math.min(1,(rootYpx-targetY)/(innerHeight*.09)));
+      dot.style.opacity=glow;halo.style.opacity=glow;progress.style.opacity=.2+.8*glow;
+      scenes.forEach(scene=>{const r=scene.getBoundingClientRect(),p=Math.max(0,Math.min(1,(innerHeight-r.top)/(innerHeight+r.height*.55))); const appear=Math.max(0,Math.min(1,(p-.07)*4));scene.style.setProperty('--p',p.toFixed(3));scene.style.setProperty('--appear',appear.toFixed(3));scene.style.setProperty('--morph',Math.max(0,Math.min(1,(p-.35)*2.8)).toFixed(3));});
+      ticking=false;
+    }
+    function requestUpdate(){if(!ticking){requestAnimationFrame(update);ticking=true;}}
+    addEventListener('scroll',requestUpdate,{passive:true});addEventListener('resize',layoutPath);treeImage.addEventListener('load',layoutPath);layoutPath();
+  </script>
+</body>
+</html>
