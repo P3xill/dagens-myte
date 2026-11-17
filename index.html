@@ -71,12 +71,14 @@
       .intro { --cover-inset:8vw; grid-template-columns:1fr; align-content:center; gap:clamp(12px,3svh,28px); padding:30px var(--cover-inset); }
       .intro h1 { font-size:clamp(53px,13vw,94px); }
       .intro-art { justify-self:end; width:min(78%,360px); max-height:46svh; object-position:right center; }
-      .scene { min-height:112svh; grid-template-columns:1fr; grid-template-rows:auto auto; gap:0; padding:10vh 26px 12vh; align-content:center; }
+      .scene { min-height:112svh; grid-template-columns:minmax(0,1fr); grid-template-rows:auto auto; gap:0; padding:10vh 22px 12vh 38px; align-content:center; }
       .scene:nth-of-type(even) .scene-copy,.scene:nth-of-type(even) .art { grid-column:1; grid-row:auto; }
-      .scene-copy { order:1; max-width:580px; } .art { order:2; min-height:48vh; }
+      .scene-copy { order:1; max-width:580px; box-shadow:none; } .art { order:2; min-height:48vh; }
+      .eyebrow { gap:12px; }
+      .eyebrow::after { width:32px; }
       .scene h2 { font-size:clamp(43px,12vw,72px); } .scene-lead { font-size:19px; max-width:30ch; }
-      .art img { max-height:50vh; } .art--arrows img { width:min(76vw,450px); }
-      .art--dafne img { width:min(68vw,350px); }
+      .art img { max-height:50vh; } .art--arrows img { width:min(100%,76vw,450px); }
+      .art--dafne img { width:min(68vw,350px); transform:translateX(calc((1 - var(--p,0))*-14px)); }
       .art--chase { min-height:clamp(205px,66vw,390px); }
       .art--chase img { height:auto; max-height:100%; object-position:bottom; }
       .art--chase .apollo { width:34%; left:4%; transform:translateX(calc((1 - var(--p,0))*-9%)); }
@@ -105,7 +107,7 @@
         <defs><clipPath id="timeline-reveal"><rect id="timeline-reveal-area" x="-30" y="-30" width="1060" height="0"/></clipPath></defs>
         <path id="path-base" class="path-base" d="M500 0 C700 240 820 420 720 700 S210 980 240 1250 S820 1520 760 1800 S220 2110 270 2380 S770 2730 730 3010 S190 3330 250 3640 S830 3940 760 4240 S240 4600 330 4840 C470 4920 570 4980 620 5030 C660 5120 680 5220 680 5290"/>
         <path id="path-progress" class="path-progress" clip-path="url(#timeline-reveal)"/>
-        <circle id="path-halo" class="path-dot-halo" cx="500" cy="0" r="19"/><circle id="path-dot" class="path-dot" cx="500" cy="0" r="7"/>
+        <ellipse id="path-halo" class="path-dot-halo" cx="500" cy="0" rx="19" ry="19"/><ellipse id="path-dot" class="path-dot" cx="500" cy="0" rx="7" ry="7"/>
       </svg>
       <section class="scene" id="scene-1" aria-labelledby="heading-1">
         <div class="scene-copy"><div class="eyebrow">01 / Begyndelsen</div><h2 id="heading-1">Amors to pile</h2><p class="scene-lead">Guden Apollon håner Amor, kærlighedens gud. Amor svarer med to pile.</p><button class="read-more" data-scene="1">Læs hele scenen ↗</button></div>
@@ -155,13 +157,35 @@
     let total=0,rootYpx=story.offsetHeight,ticking=false;
     function layoutPath(){
       const hasTree=treeImage.complete&&treeImage.naturalWidth>0;
+      const narrow=innerWidth<=760;
       const rootXpx=hasTree?finalScene.offsetLeft+treeArt.offsetLeft+treeFrame.offsetLeft+treeFrame.offsetWidth*.343:story.offsetWidth*.68;
-      rootYpx=hasTree?finalScene.offsetTop+treeArt.offsetTop+treeFrame.offsetTop+treeFrame.offsetHeight*.93:story.offsetHeight*.945;
+      const treeTop=finalScene.offsetTop+treeArt.offsetTop+treeFrame.offsetTop;
+      const treeBottom=treeTop+treeFrame.offsetHeight;
+      rootYpx=hasTree
+        ? (narrow ? treeBottom+28 : treeTop+treeFrame.offsetHeight*.93)
+        : story.offsetHeight*.945;
       const rootX=rootXpx/story.offsetWidth*1000;
       const rootY=rootYpx/story.offsetHeight*5600;
       const turnY=4240+(rootY-4240)*.53;
-      const approachX=innerWidth<=760 ? 100 : rootX-160;
-      const d=`M500 0 C700 240 820 420 720 700 S210 980 240 1250 S820 1520 760 1800 S220 2110 270 2380 S770 2730 730 3010 S190 3330 250 3640 S830 3940 760 4240 S${approachX} ${turnY-180} ${approachX} ${turnY} S${rootX-65} ${rootY-100} ${rootX} ${rootY}`;
+      const approachX=rootX-160;
+      let d=`M500 0 C700 240 820 420 720 700 S210 980 240 1250 S820 1520 760 1800 S220 2110 270 2380 S770 2730 730 3010 S190 3330 250 3640 S830 3940 760 4240 S${approachX} ${turnY-180} ${approachX} ${turnY} S${rootX-65} ${rootY-100} ${rootX} ${rootY}`;
+      if(narrow){
+        const x=pixels=>pixels*1000/story.offsetWidth;
+        const y=pixels=>pixels*5600/story.offsetHeight;
+        d=`M${x(16)} 0`;
+        // Give the line its own gutter, then turn below the final illustration.
+        const gutterEnd=y(rootYpx-25);
+        for(let i=0;i<5;i++){
+          const start=gutterEnd*i/5, end=gutterEnd*(i+1)/5;
+          const bend=x(i%2===0?24:9);
+          d+=` Q${bend} ${(start+end)/2} ${x(16)} ${end}`;
+        }
+        d+=` C${x(16)} ${rootY} ${rootX/2} ${rootY} ${rootX} ${rootY}`;
+      }
+      for(const [marker,radius] of [[dot,7],[halo,19]]){
+        marker.setAttribute('rx',narrow ? radius*.7*1000/story.offsetWidth : radius);
+        marker.setAttribute('ry',narrow ? radius*.7*5600/story.offsetHeight : radius);
+      }
       path.setAttribute('d',d);progress.setAttribute('d',d);
       total=path.getTotalLength();
       update();
