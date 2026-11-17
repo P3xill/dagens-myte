@@ -77,10 +77,17 @@
       .scene h2 { font-size:clamp(43px,12vw,72px); } .scene-lead { font-size:19px; max-width:30ch; }
       .art img { max-height:50vh; } .art--arrows img { width:min(76vw,450px); }
       .art--dafne img { width:min(68vw,350px); }
-      .art--chase { overflow:hidden; } .art--chase img { height:45vh; } .art--chase .apollo { height:32vh; left:-15px; } .art--chase .daphne { height:43vh; right:-10px; }
+      .art--chase { min-height:clamp(205px,66vw,390px); }
+      .art--chase img { height:auto; max-height:100%; object-position:bottom; }
+      .art--chase .apollo { width:34%; left:4%; transform:translateX(calc((1 - var(--p,0))*-9%)); }
+      .art--chase .daphne { width:56%; right:4%; transform:translateX(calc((1 - var(--p,0))*5%)); }
       .art--change .daphne,.art--change .tree { height:48vh; }
       .tree-illustration { width:min(85vw,500px,55vh); }
       .art::after { display:none; }
+      .read-more { min-height:44px; margin-top:24px; }
+      dialog { padding:24px; }
+      dialog p { font-size:17px; line-height:1.5; }
+      .close { top:4px; right:6px; min-width:44px; min-height:44px; }
     }
     @media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } .path-layer,.scene-copy,.art,.art img { transition:none!important; } .scene-copy,.art,.art img { transform:none!important; } }
   </style>
